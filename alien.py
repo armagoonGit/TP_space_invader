@@ -3,16 +3,16 @@ import random
 
 class Alien:
 
-    def __init__ (self,type):
+    def __init__ (self):
         self.speed=1
         self.direction=1
         self.max=300
         self.min=0
-        self.type=type
-        self.x=canvas.coord[0]
-        self.y=canvas.coord[1]
+        self.x=100
+        self.y=100
 
     def mouvement (self):
+
         self.x=self.x+self.direction*10
         if self.x==self.max or self.x==self.min:
             self.y=self.y-10
