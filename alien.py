@@ -3,29 +3,30 @@ import random
 
 class Alien:
 
-    def __init__ (self):
-        self.speed=1
-        self.direction=1
-        self.max=300
-        self.min=0
-        self.x=100
-        self.y=100
+    def __init__ (self, x, y):
+        self.speed = 1
+        self.direction = 1
+        self.x = x
+        self.y = y
 
-    def mouvement (self):
+    def mouvement (self, newRow):
+        if newRow == True:
+            self.direction *= -1
+            self.y += 50 
 
-        self.x=self.x+self.direction*10
-        if self.x==self.max or self.x==self.min:
-            self.y=self.y-10
-            self.direction=-self.direction
+        self.x = self.x + self.direction * 10
+
+        
         tire=random.randint(self.speed,90)
+        """
         if tire>=85:
             self.tire()
-
-
+"""
+"""
     def tire(self):
         projectile= projectile(self.x,self.y,ennemi)
         
-
+"""
         
         
         
