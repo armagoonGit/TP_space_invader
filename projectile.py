@@ -5,6 +5,7 @@ class projectile:
     def __init__ (self,x,y,type):
         self.x=x
         self.y=y
+        self.ymax==500
         if type==ennemie:
             self.type=-1
         elif type==ally:
@@ -13,6 +14,8 @@ class projectile:
 
     def mouvement(self):
         self.y=self.y+self.type
+        if self.y==self.ymax:
+            destroy(self)
 
     def collision(self):
         if len(canvas.find_overlapping(canvas.coords(self)[0],canvas.coords(self)[1],canvas.coords(self)[2],canvas.coords(self)[3]))>1:
