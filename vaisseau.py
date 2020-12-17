@@ -12,5 +12,5 @@ class Alien:
         elif dir=="gauche":
             self.x=self.x-1
     
-    def tir(self):
-        projectile= projectile(self.x,self.y,ally)
+    #def tir(self):
+     #   projectile= projectile(self.x,self.y,ally)
