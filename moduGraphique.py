@@ -16,20 +16,28 @@ class fenetre():
         #tkinter
         self.fen = Tk()
         
+        self.width = 1000
+        self.height = 700 
+        
         
         self.quitBut = Button( self.fen, text = "quitter le jeu", command = self.fen.destroy)
         self.newGameBut = Button( self.fen, text = "nouveau jeu", command = gameRule.initialisationObj )
         
+        self.message =Label( self.fen, text = "Le jeu est LOOOOOURD")
+
+        
         self.score = Label( self.fen, text = "score : 0" )
         self.live = Label( self.fen, text = "lives : 3" )
 
-        self.can = Canvas( self.fen, width = 1000, height = 700 )
+        self.can = Canvas( self.fen, width = self.width, height = self.height )
 
         
     def go(self): #mise en place au debut du programe
         self.fen.title("Space invader")
         
-        self.can.grid(row = 1, column = 1, rowspan= 4)
+        self.message.grid(row= 1, column = 1)
+        
+        self.can.grid(row = 2, column = 1, rowspan= 4)
         
         self.live.grid(row = 1, column = 2)
         self.score.grid(row = 2, column = 2)
@@ -39,6 +47,12 @@ class fenetre():
      
 
         self.fen.mainloop()
-
-
+    
+    def lowLife(self):
+        text = self.live.cget("text")
+        text = text.split(" ")
+        text = int( text[-1] ) - 1
+        self.live.config(text = str( "lives : " + str( text ) ))
+        self.live.config( bg = "red")
+        
 

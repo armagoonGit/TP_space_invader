@@ -60,23 +60,33 @@ class gameRule:
 
     def turn(self):
         infoMov = self.adaptMovement()
+        index = 0
         
         for el in zip(self.missile, self.idMissile):
-            el[0].mouvement()
+            rmShoot1 = el[0].mouvement()
             self.affichage.can.coords(el[1], el[0].x, el[0].y, el[0].x + 10, el[0].y + 10)
 
+            rmShoot2 = self.missileTouche(el[0])
+
+            if rmShoot1 == True or rmShoot2 == True :
+                self.affichage.can.delete( self.idMissile[index])
+                self.missile.pop(index)
+                self.idMissile.pop(index)
+    
+            index += 1
+                
         for el in zip(self.alien, self.idAlien) :
 
             addShoot = el[0].mouvement( infoMov ) #mouvement de l'alien 
             self.affichage.can.coords(el[1] ,el[0].x, el[0].y, el[0].x + 20, el[0].y + 20 ) #affichage de l'alien avec un rond moche
             
             if addShoot == True:
-                self.missile.append( projectile(el[0].x + 5, el[0].y + 20, "foe") )
+                self.missile.append( projectile(el[0].x + 5, el[0].y + 20, self.affichage.height , "foe") )
                 missile = self.missile[-1]
                 self.idMissile.append( self.affichage.can.create_oval(missile.x, missile.y, missile.x + 10, missile.y + 10,width=1,outline='green',fill='green') )
                 
                 
-        self.missileTouche()
+
         self.affichage.fen.after(20, self.turn)
         
     def adaptMovement(self):
@@ -101,21 +111,31 @@ class gameRule:
         elif touche=='Right':
             self.ship.mouvement("droite")
         elif touche=='space':
-                self.missile.append( projectile(self.ship.x + 5, self.ship.y + 20, "ally") )
-                missile = self.missile[-1]
-                self.idMissile.append( self.affichage.can.create_oval(missile.x, missile.y, missile.x + 10, missile.y + 10,width=1,outline='green',fill='green') )
+            self.missile.append( projectile(self.ship.x + 5, self.ship.y - 20, self.affichage.height, "ally") )
+            missile = self.missile[-1]
+            self.idMissile.append( self.affichage.can.create_oval(missile.x, missile.y, missile.x + 10, missile.y + 10,width=1,outline='green',fill='green') )
         self.affichage.can.coords(self.idship,self.ship.x,self.ship.y,self.ship.x+50,self.ship.y+50)
         self.affichage.fen.after(20)
 
-    def missileTouche(self):
-        for missile in self.missile:
-            for alien in self.alien:
-                if ( (alien.x - missile.x)**2 + (alien.y - missile.y)**2 )**0.5 <= 10:
-                    print("missile a touche un alien")
+    def missileTouche(self, missile):
+        index = 0
+        
+        if ( (self.ship.x - missile.x)**2 + (self.ship.y - missile.y)**2 )**0.5 <= 10:
+            self.affichage.can.delete( self.idship )
+            self.affichage.message.config( text = "Votre vaiseau est detruit" )
+            self.affichage.lowLife()
+    
+        
+        for alien in self.alien:
+            if missile.shooter == "ally" and ( (alien.x - missile.x)**2 + (alien.y - missile.y)**2 )**0.5 <= 10:
+                self.affichage.can.delete( self.idAlien[index])
+                self.alien.pop(index)
+                self.idAlien.pop(index)
+                
+                return(True)
+            index += 1
+        return(False)
            
-                
-                
-                    
 
 a = gameRule()
 
