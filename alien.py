@@ -3,11 +3,12 @@ from random import random
 
 class Alien:
 
-    def __init__ (self, x, y):
+    def __init__ (self, x, y, rayon):
         self.speed = 1
         self.direction = 1
         self.x = x
         self.y = y
+        self.rayon = rayon
 
     def mouvement (self, infoMov):
         if infoMov["newRow"] == True:

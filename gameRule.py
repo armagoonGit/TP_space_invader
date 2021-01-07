@@ -42,9 +42,12 @@ class gameRule:
         cursorY = 100
 
         for i in range(self.nbAlien):
-            self.alien.append( Alien(cursorX, cursorY) )
+            self.alien.append( Alien(cursorX, cursorY, 10) )
+            
             alien = self.alien[-1]
-            self.idAlien.append( self.affichage.can.create_oval(alien.x, alien.y, alien.x + 20, alien.y + 20,width=1,outline='red',fill='blue') )
+            ray = alien.rayon
+            
+            self.idAlien.append( self.affichage.can.create_oval(alien.x - ray, alien.y - ray, alien.x + ray, alien.y + ray,width=1,outline='red',fill='blue') )
             
             cursorX += 100
             if cursorX >= w:
@@ -78,12 +81,13 @@ class gameRule:
         for el in zip(self.alien, self.idAlien) :
 
             addShoot = el[0].mouvement( infoMov ) #mouvement de l'alien 
-            self.affichage.can.coords(el[1] ,el[0].x, el[0].y, el[0].x + 20, el[0].y + 20 ) #affichage de l'alien avec un rond moche
+            self.affichage.can.coords(el[1] ,el[0].x - el[0].rayon, el[0].y - el[0].rayon, el[0].x + el[0].rayon, el[0].y + el[0].rayon ) #affichage de l'alien avec un rond moche
             
             if addShoot == True:
-                self.missile.append( projectile(el[0].x + 5, el[0].y + 20, self.affichage.height , "foe") )
+                self.missile.append( projectile(el[0].x , el[0].y, self.affichage.height, 5, "foe") )
                 missile = self.missile[-1]
-                self.idMissile.append( self.affichage.can.create_oval(missile.x, missile.y, missile.x + 10, missile.y + 10,width=1,outline='green',fill='green') )
+                ray = missile.rayon
+                self.idMissile.append( self.affichage.can.create_oval(missile.x - ray, missile.y - ray, missile.x + ray, missile.y + ray,width=1,outline='green',fill='green') )
                 
                 
 
@@ -111,9 +115,9 @@ class gameRule:
         elif touche=='Right':
             self.ship.mouvement("droite")
         elif touche=='space':
-            self.missile.append( projectile(self.ship.x + 5, self.ship.y - 20, self.affichage.height, "ally") )
+            self.missile.append( projectile(self.ship.x + 5, self.ship.y - 20,self.affichage.height,5, "ally") )
             missile = self.missile[-1]
-            self.idMissile.append( self.affichage.can.create_oval(missile.x, missile.y, missile.x + 10, missile.y + 10,width=1,outline='green',fill='green') )
+            self.idMissile.append( self.affichage.can.create_oval(missile.x - missile.rayon, missile.y - missile.rayon, missile.x + missile.rayon, missile.y - missile.rayon, width=1,outline='green',fill='green') )
         self.affichage.can.coords(self.idship,self.ship.x,self.ship.y,self.ship.x+50,self.ship.y+50)
         self.affichage.fen.after(20)
 

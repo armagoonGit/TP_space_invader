@@ -1,8 +1,10 @@
 class projectile:
-    def __init__ (self, x, y, yMax, shooter):
+    def __init__ (self, x, y, yMax, rayon, shooter):
         self.x = x
         self.y = y
+        
         self.yMax = yMax
+        self.rayon = rayon
 
         self.speed=1
         self.shooter = shooter
