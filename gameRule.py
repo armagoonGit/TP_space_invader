@@ -9,7 +9,9 @@ lien git : https://github.com/armagoonGit/TP_space_invader
 """
 
 from time import sleep
+from threading import Event
 
+from vaisseau import vaisseau
 from alien import Alien
 from moduGraphique import fenetre
 from projectile import projectile
@@ -27,7 +29,8 @@ class gameRule:
         self.missile = []
         self.idMissile = []
         
-        self.ship = "a pas"
+        self.ship = vaisseau()
+        self.idship=""
     
     def start(self):
         self.affichage.go()
@@ -50,6 +53,9 @@ class gameRule:
 
 
     def initialisationObj(self):
+        self.idship=self.affichage.can.create_oval(self.ship.x,self.ship.y,self.ship.x+50,self.ship.y+50,width=1,outline='red',fill='blue')
+        self.affichage.can.focus_set()
+        self.affichage.can.bind('<Key>',lambda x:self.pinput(x))
         self.turn()
 
     def turn(self):
@@ -88,6 +94,19 @@ class gameRule:
 
         return(res)
     
+    def pinput(self,event):
+        touche=event.keysym
+        if touche=='Left':
+            self.ship.mouvement("gauche")
+        elif touche=='Right':
+            self.ship.mouvement("droite")
+        elif touche=='space':
+                self.missile.append( projectile(self.ship.x + 5, self.ship.y + 20, "ally") )
+                missile = self.missile[-1]
+                self.idMissile.append( self.affichage.can.create_oval(missile.x, missile.y, missile.x + 10, missile.y + 10,width=1,outline='green',fill='green') )
+        self.affichage.can.coords(self.idship,self.ship.x,self.ship.y,self.ship.x+50,self.ship.y+50)
+        self.affichage.fen.after(20)
+
     def missileTouche(self):
         for missile in self.missile:
             for alien in self.alien:
