@@ -41,6 +41,7 @@ class gameRule:
         
         self.ship = vaisseau()
         self.idship=""
+        self.cooldown=0
     
     def start(self):
         self.affichage.go()
@@ -93,6 +94,9 @@ class gameRule:
     def turn(self):
         infoMov = self.adaptMovement()
         index = 0
+        
+        if self.cooldown>0:
+            self.cooldown= self.cooldown-1
         
         for el in zip(self.missile, self.idMissile):
             rmShoot1 = el[0].mouvement()
@@ -157,7 +161,8 @@ class gameRule:
             self.ship.mouvement("gauche")
         elif touche=='Right':
             self.ship.mouvement("droite")
-        elif touche=='space':
+        elif touche=='space' and self.cooldown==0:
+            self.cooldown=15
             self.missile.append( projectile(self.ship.x + 5, self.ship.y - 20,self.affichage.height,5, "ally") )
             missile = self.missile[-1]
             self.idMissile.append( self.affichage.can.create_oval(missile.x - missile.rayon, missile.y - missile.rayon, missile.x + missile.rayon, missile.y - missile.rayon, width=1,outline='green',fill='green') )
@@ -171,12 +176,14 @@ class gameRule:
             self.affichage.can.delete( self.idship )
             self.affichage.message.config( text = "Votre vaiseau est detruit" )
             self.affichage.lowLife()
+            self.affichage.scoreup(-1000)
             return ( True )
         
         if ( (self.Bonus.x - missile.x)**2 + (self.Bonus.y - missile.y)**2 )**0.5 <= 10:
             self.affichage.can.delete( self.idBonus )
             self.Bonus.exist = 0
             self.idBonus = ""
+            self.affichage.scoreup(1000)
     
 
         for alien in self.alien:
@@ -184,6 +191,7 @@ class gameRule:
                 self.affichage.can.delete( self.idAlien[index])
                 self.alien.pop(index)
                 self.idAlien.pop(index)
+                self.affichage.scoreup(100)
                 
                 return(True)
             index += 1
