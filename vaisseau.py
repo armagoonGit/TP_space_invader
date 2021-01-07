@@ -1,16 +1,20 @@
-class Alien:
+class vaisseau:
 
     def __init__ (self):
-        self.max=300
-        self.min=0
-        self.x=150
-        self.y=20
+        self.max=900
+        self.min=50
+        self.x=450
+        self.y=600
 
     def mouvement(self,dir):
         if dir=="droite":
-            self.x=self.x+1
+            if self.x<self.max:
+                self.x=self.x+10
+
         elif dir=="gauche":
-            self.x=self.x-1
+            if self.x>self.min:
+                self.x=self.x-10
+
     
-    #def tir(self):
-     #   projectile= projectile(self.x,self.y,ally)
+    def tir(self):
+        projectile= projectile(self.x,self.y,ally)
