@@ -4,7 +4,7 @@
 que fait : fichier classe des regles du jeu
 qui : FOËX Vick / nael Axel
 quand : 17/12/2020
-que reste a faire : tout
+que reste a faire : les mouvement des alien en fct de infoMov. save la speed ?
 lien git : https://github.com/armagoonGit/TP_space_invader
 """
 
@@ -12,15 +12,20 @@ from time import sleep
 
 from alien import Alien
 from moduGraphique import fenetre
+from projectile import projectile
 
 class gameRule:
     def __init__(self):
         self.affichage = fenetre(self)
         
         self.nbAlien = 56
+
         self.alien = []
         self.idAlien = []
         self.alienGene()
+        
+        self.missile = []
+        self.idMissile = []
         
         self.ship = "a pas"
     
@@ -32,6 +37,7 @@ class gameRule:
         w = int( self.affichage.can.cget('width') ) - 100
         cursorX = 100
         cursorY = 100
+
         for i in range(self.nbAlien):
             self.alien.append( Alien(cursorX, cursorY) )
             alien = self.alien[-1]
@@ -47,30 +53,53 @@ class gameRule:
         self.turn()
 
     def turn(self):
-        newRow = self.checkNewRow()
+        infoMov = self.adaptMovement()
+        
+        for el in zip(self.missile, self.idMissile):
+            el[0].mouvement()
+            self.affichage.can.coords(el[1], el[0].x, el[0].y, el[0].x + 10, el[0].y + 10)
 
         for el in zip(self.alien, self.idAlien) :
 
-            el[0].mouvement( newRow )
-            self.affichage.can.coords(el[1] ,el[0].x, el[0].y, el[0].x + 20, el[0].y + 20 )
+            addShoot = el[0].mouvement( infoMov ) #mouvement de l'alien 
+            self.affichage.can.coords(el[1] ,el[0].x, el[0].y, el[0].x + 20, el[0].y + 20 ) #affichage de l'alien avec un rond moche
             
-        self.affichage.fen.after(50, self.turn)
+            if addShoot == True:
+                self.missile.append( projectile(el[0].x + 5, el[0].y + 20, "foe") )
+                missile = self.missile[-1]
+                self.idMissile.append( self.affichage.can.create_oval(missile.x, missile.y, missile.x + 10, missile.y + 10,width=1,outline='green',fill='green') )
+                
+                
+        self.missileTouche()
+        self.affichage.fen.after(20, self.turn)
         
-    def checkNewRow(self):
+    def adaptMovement(self):
         w = int( self.affichage.can.cget('width') )
+        res = {}
+        res["speed"] = (len(self.alien) / self.nbAlien) / ( len(self.alien) / 2 ) #vitesse max pour un seul alien est de 2
+        res["newRow"] = False
         
         for alien in self.alien :
             nextPosX = alien.x + alien.direction * 10
             
             if nextPosX >= w or nextPosX <= 0:
-                return(True)
+                res["newRow"] = True
+                return(res)
 
-        return(False)
-            
-        
-        
+        return(res)
+    
+    def missileTouche(self):
+        for missile in self.missile:
+            for alien in self.alien:
+                if ( (alien.x - missile.x)**2 + (alien.y - missile.y)**2 )**0.5 <= 10:
+                    print("missile a touche un alien")
+           
+                
+                
+                    
+
 a = gameRule()
-print(a.affichage.can.cget('height') )
+
 a.start()
 
 

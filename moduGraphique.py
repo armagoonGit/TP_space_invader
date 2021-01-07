@@ -41,18 +41,4 @@ class fenetre():
         self.fen.mainloop()
 
 
-    def change(self): #actualisation qd on soument une lettre
-         """
-         Waiting for instruction
-         """
-
-
-    def end(self):
-        """
-         Waiting for instruction
-         """        
-         
-         
-
-
 

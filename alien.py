@@ -1,5 +1,5 @@
 import time
-import random
+from random import random
 
 class Alien:
 
@@ -9,24 +9,22 @@ class Alien:
         self.x = x
         self.y = y
 
-    def mouvement (self, newRow):
-        if newRow == True:
+    def mouvement (self, infoMov):
+        if infoMov["newRow"] == True:
             self.direction *= -1
-            self.y += 50 
+            self.y += 20 
 
-        self.x = self.x + self.direction * 10
-
+        self.x +=  self.direction * 1 * infoMov["speed"]
         
-        tire=random.randint(self.speed,90)
-        """
-        if tire>=85:
-            self.tire()
-"""
-"""
+        tire=random() * 100
+
+        if tire>=99.99:
+            return(True) #cree un projo
+        return(False)
+
     def tire(self):
         projectile= projectile(self.x,self.y,ennemi)
         
-"""
         
         
         
