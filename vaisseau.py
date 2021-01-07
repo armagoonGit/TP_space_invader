@@ -1,11 +1,12 @@
 class vaisseau:
 
-    def __init__ (self):
+    def __init__ (self, rayon):
         self.max=900
         self.min=50
 
         self.x=450
         self.y=600
+        self.rayon = rayon
 
     def mouvement(self,dir):
         if dir=="droite":
@@ -18,4 +19,4 @@ class vaisseau:
 
     
     def tir(self):
-        projectile= projectile(self.x,self.y,ally)
+        projectile = projectile(self.x,self.y,ally)

@@ -33,14 +33,15 @@ class gameRule:
         self.idShelter=[]
         self.ShelterGene()
         
-        self.Bonus=bonus()
-        self.idBonus=""
+        self.bonus = ""
+        self.idBonus = ""
         
         self.missile = []
         self.idMissile = []
         
-        self.ship = vaisseau()
+        self.ship = vaisseau(25)
         self.idship=""
+        self.cooldown=0
     
     def start(self):
         self.affichage.go()
@@ -53,9 +54,10 @@ class gameRule:
 
         for i in range(self.nbshelter):
             if cursorX>=w/7 and cursorX<=2*w/7 or cursorX>=3*w/7 and cursorX<=4*w/7 or cursorX>=5*w/7 and cursorX<=6*w/7:
-                self.Shelter.append( shelter(cursorX, cursorY) )
+                self.Shelter.append( shelter(cursorX, cursorY, 5) )
                 Shelter = self.Shelter[-1]
-                self.idShelter.append( self.affichage.can.create_rectangle(Shelter.x, Shelter.y, Shelter.x + 10, Shelter.y + 10,fill='DarkOrchid1') )
+                ray = Shelter.rayon
+                self.idShelter.append( self.affichage.can.create_rectangle(Shelter.x + ray, Shelter.y + ray, Shelter.x - ray, Shelter.y - ray,fill='DarkOrchid1') )
             
             cursorX += 10
             if cursorX >= w:
@@ -80,11 +82,9 @@ class gameRule:
             if cursorX >= w:
                 cursorY += 40
                 cursorX = 100
-        
-
 
     def initialisationObj(self):
-        self.idship=self.affichage.can.create_oval(self.ship.x,self.ship.y,self.ship.x+50,self.ship.y+50,width=1,outline='red',fill='blue')
+        self.idship=self.affichage.can.create_oval(self.ship.x - self.ship.rayon, self.ship.y - self.ship.rayon, self.ship.x + self.ship.rayon, self.ship.y + self.ship.rayon,width=1,outline='red',fill='blue')
         self.affichage.can.focus_set()
         self.affichage.can.bind('<Key>',lambda x:self.pinput(x))
         self.turn()
@@ -92,6 +92,9 @@ class gameRule:
     def turn(self):
         infoMov = self.adaptMovement()
         index = 0
+        
+        if self.cooldown>0:
+            self.cooldown= self.cooldown-1
         
         for el in zip(self.missile, self.idMissile):
             rmShoot1 = el[0].mouvement()
@@ -102,7 +105,7 @@ class gameRule:
                 self.missile.pop(index)
                 self.idMissile.pop(index)
             else:
-                self.affichage.can.coords(el[1], el[0].x, el[0].y, el[0].x + 10, el[0].y + 10)
+                self.affichage.can.coords(el[1], el[0].x - el[0].rayon , el[0].y - el[0].rayon, el[0].x + el[0].rayon, el[0].y + el[0].rayon)
 
             index += 1
                 
@@ -117,20 +120,21 @@ class gameRule:
                 ray = missile.rayon
                 self.idMissile.append( self.affichage.can.create_oval(missile.x - ray, missile.y - ray, missile.x + ray, missile.y + ray,width=1,outline='green',fill='green') )
                 
-        if self.Bonus.exist==0:
-            bonusnb=randint(0,1000)   
-            if bonusnb>=1000:
-                self.Bonus=bonus()
-                self.idBonus=self.affichage.can.create_oval(self.Bonus.x,self.Bonus.y,self.Bonus.x+30,self.Bonus.y+10,width=1,outline="blue",fill="lime")
-                self.Bonus.exist=1
+        if self.bonus == "": #si il n'y a pas deja de bonus. On en creer peut etre un
+            bonusnb=randint(1000, 1000)   
+            if bonusnb == 1000 :
+                self.bonus=bonus()
+                ray = self.bonus.rayon
+                self.idBonus=self.affichage.can.create_oval(self.bonus.x - ray ,self.bonus.y - ray ,self.bonus.x + ray, self.bonus.y + ray,width=1,outline="blue",fill="lime")
 
-        else:
-            if self.Bonus.x<=1000 and self.Bonus.dir==1 or self.Bonus.x>=-10 and self.Bonus.dir==-1:
-                self.Bonus.mouvement()
-                self.affichage.can.coords(self.idBonus,self.Bonus.x,self.Bonus.y,self.Bonus.x+30,self.Bonus.y+10)
+        else: #si on a un bonus en jeu on le fait bouger
+            if self.bonus.x <= 1000 and self.bonus.dir == 1 or self.bonus.x >= -10 and self.bonus.dir == -1:
+                self.bonus.mouvement()
+                ray = self.bonus.rayon
+                self.affichage.can.coords(self.idBonus ,self.bonus.x - ray, self.bonus.y - ray, self.bonus.x + ray, self.bonus.y + ray )
             else:
                 self.affichage.can.delete(self.idBonus)
-                self.Bonus=bonus()
+                self.bonus = ""
                 
 
         self.affichage.fen.after(20, self.turn)
@@ -156,40 +160,46 @@ class gameRule:
             self.ship.mouvement("gauche")
         elif touche=='Right':
             self.ship.mouvement("droite")
-        elif touche=='space':
+        elif touche=='space' and self.cooldown==0:
+            self.cooldown=15
             self.missile.append( projectile(self.ship.x + 5, self.ship.y - 20,self.affichage.height,5, "ally") )
             missile = self.missile[-1]
             self.idMissile.append( self.affichage.can.create_oval(missile.x - missile.rayon, missile.y - missile.rayon, missile.x + missile.rayon, missile.y - missile.rayon, width=1,outline='green',fill='green') )
-        self.affichage.can.coords(self.idship,self.ship.x,self.ship.y,self.ship.x+50,self.ship.y+50)
+        
+        self.affichage.can.coords(self.idship ,self.ship.x - self.ship.rayon, self.ship.y - self.ship.rayon, self.ship.x + self.ship.rayon, self.ship.y + self.ship.rayon)
         self.affichage.fen.after(20)
 
     def missileTouche(self, missile):
         index = 0
         
-        if ( (self.ship.x - missile.x)**2 + (self.ship.y - missile.y)**2 )**0.5 <= 10: #si touche le vaiseau
+        if ( (self.ship.x - missile.x)**2 + (self.ship.y - missile.y)**2 )**0.5 <= self.ship.rayon + missile.rayon: #si touche le vaiseau
             self.affichage.can.delete( self.idship )
             self.affichage.message.config( text = "Votre vaiseau est detruit" )
             self.affichage.lowLife()
+            self.affichage.scoreup(-1000)
             return ( True )
         
-        if ( (self.Bonus.x - missile.x)**2 + (self.Bonus.y - missile.y)**2 )**0.5 <= 10:
-            self.affichage.can.delete( self.idBonus )
-            self.Bonus.exist = 0
-            self.idBonus = ""
+        if self.bonus != "":
+            if ( (self.bonus.x - missile.x)**2 + (self.bonus.y - missile.y)**2 )**0.5 <= self.bonus.rayon + missile.rayon:
+                self.affichage.can.delete( self.idBonus )
+                self.bonus = ""
+                self.idBonus = ""
+                self.affichage.scoreup(1000)
     
 
         for alien in self.alien:
-            if missile.shooter == "ally" and ( (alien.x - missile.x)**2 + (alien.y - missile.y)**2 )**0.5 <= 10:
+            if missile.shooter == "ally" and ( (alien.x - missile.x)**2 + (alien.y - missile.y)**2 )**0.5 <= missile.rayon + alien.rayon:
                 self.affichage.can.delete( self.idAlien[index])
                 self.alien.pop(index)
                 self.idAlien.pop(index)
+                self.affichage.scoreup(100)
                 
                 return(True)
             index += 1
         
         index = 0
         for shelter in self.Shelter:
-            if ( (shelter.x - missile.x)**2 + (shelter.y - missile.y)**2 )**0.5 <= 10:
+            if ( (shelter.x - missile.x)**2 + (shelter.y - missile.y)**2 )**0.5 < missile.rayon + shelter.rayon:
                 self.affichage.can.delete( self.idShelter[index] )
                 self.Shelter.pop(index)
                 self.idShelter.pop(index)
