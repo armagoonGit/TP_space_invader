@@ -3,6 +3,7 @@ class vaisseau:
     def __init__ (self):
         self.max=900
         self.min=50
+
         self.x=450
         self.y=600
 

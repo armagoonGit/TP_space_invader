@@ -9,3 +9,8 @@ A faire:
 -graphique
 -équilibrage
 -score
+
+
+centrer les objets(deja fait pour aline et projo) et leurs tirs
+
+remplacer les nom de variable moche

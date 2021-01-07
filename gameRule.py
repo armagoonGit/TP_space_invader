@@ -80,6 +80,7 @@ class gameRule:
             if cursorX >= w:
                 cursorY += 40
                 cursorX = 100
+        
 
 
     def initialisationObj(self):
@@ -94,15 +95,15 @@ class gameRule:
         
         for el in zip(self.missile, self.idMissile):
             rmShoot1 = el[0].mouvement()
-            self.affichage.can.coords(el[1], el[0].x, el[0].y, el[0].x + 10, el[0].y + 10)
-
             rmShoot2 = self.missileTouche(el[0])
 
             if rmShoot1 == True or rmShoot2 == True :
                 self.affichage.can.delete( self.idMissile[index])
                 self.missile.pop(index)
                 self.idMissile.pop(index)
-    
+            else:
+                self.affichage.can.coords(el[1], el[0].x, el[0].y, el[0].x + 10, el[0].y + 10)
+
             index += 1
                 
         for el in zip(self.alien, self.idAlien) :
@@ -119,6 +120,7 @@ class gameRule:
         if self.Bonus.exist==0:
             bonusnb=randint(0,1000)   
             if bonusnb>=1000:
+                self.Bonus=bonus()
                 self.idBonus=self.affichage.can.create_oval(self.Bonus.x,self.Bonus.y,self.Bonus.x+30,self.Bonus.y+10,width=1,outline="blue",fill="lime")
                 self.Bonus.exist=1
 
@@ -127,7 +129,6 @@ class gameRule:
                 self.Bonus.mouvement()
                 self.affichage.can.coords(self.idBonus,self.Bonus.x,self.Bonus.y,self.Bonus.x+30,self.Bonus.y+10)
             else:
-                self.Bonus.exist=0
                 self.affichage.can.delete(self.idBonus)
                 self.Bonus=bonus()
                 
@@ -165,12 +166,18 @@ class gameRule:
     def missileTouche(self, missile):
         index = 0
         
-        if ( (self.ship.x - missile.x)**2 + (self.ship.y - missile.y)**2 )**0.5 <= 10:
+        if ( (self.ship.x - missile.x)**2 + (self.ship.y - missile.y)**2 )**0.5 <= 10: #si touche le vaiseau
             self.affichage.can.delete( self.idship )
             self.affichage.message.config( text = "Votre vaiseau est detruit" )
             self.affichage.lowLife()
-    
+            return ( True )
         
+        if ( (self.Bonus.x - missile.x)**2 + (self.Bonus.y - missile.y)**2 )**0.5 <= 10:
+            self.affichage.can.delete( self.idBonus )
+            self.Bonus.exist = 0
+            self.idBonus = ""
+    
+
         for alien in self.alien:
             if missile.shooter == "ally" and ( (alien.x - missile.x)**2 + (alien.y - missile.y)**2 )**0.5 <= 10:
                 self.affichage.can.delete( self.idAlien[index])
@@ -179,6 +186,16 @@ class gameRule:
                 
                 return(True)
             index += 1
+        
+        index = 0
+        for shelter in self.Shelter:
+            if ( (shelter.x - missile.x)**2 + (shelter.y - missile.y)**2 )**0.5 <= 10:
+                self.affichage.can.delete( self.idShelter[index] )
+                self.Shelter.pop(index)
+                self.idShelter.pop(index)
+                return(True)
+            index += 1
+
         return(False)
            
 
