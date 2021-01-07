@@ -7,11 +7,13 @@ quand : 17/12/2020
 que reste a faire : les mouvement des alien en fct de infoMov. save la speed ?
 lien git : https://github.com/armagoonGit/TP_space_invader
 """
-
+from random import randint
 from time import sleep
 from threading import Event
 
 from vaisseau import vaisseau
+from bonus import bonus
+from shelter import shelter
 from alien import Alien
 from moduGraphique import fenetre
 from projectile import projectile
@@ -26,6 +28,14 @@ class gameRule:
         self.idAlien = []
         self.alienGene()
         
+        self.nbshelter =5*80
+        self.Shelter=[]
+        self.idShelter=[]
+        self.ShelterGene()
+        
+        self.Bonus=bonus()
+        self.idBonus=""
+        
         self.missile = []
         self.idMissile = []
         
@@ -34,6 +44,23 @@ class gameRule:
     
     def start(self):
         self.affichage.go()
+        
+    def ShelterGene(self):
+        h = int( self.affichage.can.cget('height') ) - 200
+        w = int( self.affichage.can.cget('width') ) - 100
+        cursorX = 105
+        cursorY = 500
+
+        for i in range(self.nbshelter):
+            if cursorX>=w/7 and cursorX<=2*w/7 or cursorX>=3*w/7 and cursorX<=4*w/7 or cursorX>=5*w/7 and cursorX<=6*w/7:
+                self.Shelter.append( shelter(cursorX, cursorY) )
+                Shelter = self.Shelter[-1]
+                self.idShelter.append( self.affichage.can.create_rectangle(Shelter.x, Shelter.y, Shelter.x + 10, Shelter.y + 10,fill='DarkOrchid1') )
+            
+            cursorX += 10
+            if cursorX >= w:
+                cursorY += 10
+                cursorX = 105
         
     def alienGene(self):
         h = int( self.affichage.can.cget('height') ) - 200
@@ -89,6 +116,20 @@ class gameRule:
                 ray = missile.rayon
                 self.idMissile.append( self.affichage.can.create_oval(missile.x - ray, missile.y - ray, missile.x + ray, missile.y + ray,width=1,outline='green',fill='green') )
                 
+        if self.Bonus.exist==0:
+            bonusnb=randint(0,1000)   
+            if bonusnb>=1000:
+                self.idBonus=self.affichage.can.create_oval(self.Bonus.x,self.Bonus.y,self.Bonus.x+30,self.Bonus.y+10,width=1,outline="blue",fill="lime")
+                self.Bonus.exist=1
+
+        else:
+            if self.Bonus.x<=1000 and self.Bonus.dir==1 or self.Bonus.x>=-10 and self.Bonus.dir==-1:
+                self.Bonus.mouvement()
+                self.affichage.can.coords(self.idBonus,self.Bonus.x,self.Bonus.y,self.Bonus.x+30,self.Bonus.y+10)
+            else:
+                self.Bonus.exist=0
+                self.affichage.can.delete(self.idBonus)
+                self.Bonus=bonus()
                 
 
         self.affichage.fen.after(20, self.turn)
