@@ -170,12 +170,14 @@ class gameRule:
             self.affichage.can.delete( self.idship )
             self.affichage.message.config( text = "Votre vaiseau est detruit" )
             self.affichage.lowLife()
+            self.affichage.scoreup(-1000)
             return ( True )
         
         if ( (self.Bonus.x - missile.x)**2 + (self.Bonus.y - missile.y)**2 )**0.5 <= 10:
             self.affichage.can.delete( self.idBonus )
             self.Bonus.exist = 0
             self.idBonus = ""
+            self.affichage.scoreup(1000)
     
 
         for alien in self.alien:
@@ -183,6 +185,7 @@ class gameRule:
                 self.affichage.can.delete( self.idAlien[index])
                 self.alien.pop(index)
                 self.idAlien.pop(index)
+                self.affichage.scoreup(100)
                 
                 return(True)
             index += 1
