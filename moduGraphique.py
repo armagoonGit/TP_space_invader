@@ -54,5 +54,13 @@ class fenetre():
         text = int( text[-1] ) - 1
         self.live.config(text = str( "lives : " + str( text ) ))
         self.live.config( bg = "red")
+    
+    def scoreup(self,points):
+        text = self.score.cget("text")
+        text = text.strip(" ")
+        text = int(text[8:]) + points
+        if text<0:
+            text=0
+        self.score.config(text= str("score : " +str(text)))
         
 
