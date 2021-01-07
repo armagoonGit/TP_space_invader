@@ -53,9 +53,10 @@ class gameRule:
 
         for i in range(self.nbshelter):
             if cursorX>=w/7 and cursorX<=2*w/7 or cursorX>=3*w/7 and cursorX<=4*w/7 or cursorX>=5*w/7 and cursorX<=6*w/7:
-                self.Shelter.append( shelter(cursorX, cursorY) )
+                self.Shelter.append( shelter(cursorX, cursorY, 5) )
                 Shelter = self.Shelter[-1]
-                self.idShelter.append( self.affichage.can.create_rectangle(Shelter.x, Shelter.y, Shelter.x + 10, Shelter.y + 10,fill='DarkOrchid1') )
+                ray = Shelter.rayon
+                self.idShelter.append( self.affichage.can.create_rectangle(Shelter.x + ray, Shelter.y + ray, Shelter.x - ray, Shelter.y - ray,fill='DarkOrchid1') )
             
             cursorX += 10
             if cursorX >= w:
@@ -102,7 +103,7 @@ class gameRule:
                 self.missile.pop(index)
                 self.idMissile.pop(index)
             else:
-                self.affichage.can.coords(el[1], el[0].x, el[0].y, el[0].x + 10, el[0].y + 10)
+                self.affichage.can.coords(el[1], el[0].x - el[0].rayon , el[0].y - el[0].rayon, el[0].x + el[0].rayon, el[0].y + el[0].rayon)
 
             index += 1
                 
@@ -170,14 +171,12 @@ class gameRule:
             self.affichage.can.delete( self.idship )
             self.affichage.message.config( text = "Votre vaiseau est detruit" )
             self.affichage.lowLife()
-            self.affichage.scoreup(-1000)
             return ( True )
         
         if ( (self.Bonus.x - missile.x)**2 + (self.Bonus.y - missile.y)**2 )**0.5 <= 10:
             self.affichage.can.delete( self.idBonus )
             self.Bonus.exist = 0
             self.idBonus = ""
-            self.affichage.scoreup(1000)
     
 
         for alien in self.alien:
@@ -185,14 +184,14 @@ class gameRule:
                 self.affichage.can.delete( self.idAlien[index])
                 self.alien.pop(index)
                 self.idAlien.pop(index)
-                self.affichage.scoreup(100)
                 
                 return(True)
             index += 1
         
         index = 0
         for shelter in self.Shelter:
-            if ( (shelter.x - missile.x)**2 + (shelter.y - missile.y)**2 )**0.5 <= 10:
+            if ( (shelter.x - missile.x)**2 + (shelter.y - missile.y)**2 )**0.5 < missile.rayon + shelter.rayon:
+                print(( (shelter.x - missile.x)**2 + (shelter.y - missile.y)**2 )**0.5, missile.rayon + shelter.rayon )
                 self.affichage.can.delete( self.idShelter[index] )
                 self.Shelter.pop(index)
                 self.idShelter.pop(index)
