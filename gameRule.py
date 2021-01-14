@@ -6,8 +6,9 @@ qui : FOËX Vick / nael Axel
 quand : 17/12/2020
 que reste a faire : 
         image
+        affichage des message en bien
+        cooldown message 
 
-        end game
         new game
 lien git : https://github.com/armagoonGit/TP_space_invader
 """
@@ -27,6 +28,8 @@ class gameRule:
     def __init__(self):
         self.affichage = fenetre(self)
         
+        self.winStreak = 0
+        
         self.nbAlien = 100
         self.alien = []
         self.idAlien = []
@@ -45,7 +48,9 @@ class gameRule:
         
         self.ship = ""
         self.idship=""
+        
         self.cooldown=0
+        
     
     def start(self):
         self.affichage.go()
@@ -77,7 +82,7 @@ class gameRule:
         cursorY = 100
 
         for i in range(self.nbAlien):
-            self.alien.append( Alien(cursorX, cursorY, 10) )
+            self.alien.append( Alien(cursorX, cursorY, 10, self.winStreak) )
             
             alien = self.alien[-1]
             ray = alien.rayon
@@ -108,25 +113,28 @@ class gameRule:
     
 
     def turn(self):
-        infoMov = self.adaptMovement()
-        index = 0
-
+        self.affichage. manageMessage()
         
         if self.cooldown>0:
             self.cooldown= self.cooldown-1
         
+        infoMov = self.adaptMovement()
+
+        index = 0
         for el in zip(self.missile, self.idMissile):
             rmShoot1 = el[0].mouvement()
             rmShoot2 = self.missileTouche(el[0])
-            if rmShoot2 == "endGame":
+            
+            if rmShoot2 == "endGame": #coupe la recurciviter de la fonction en cas de game OVER
                 return()
-            elif rmShoot1 == True or rmShoot2 == True :
+            
+            elif rmShoot1 == True or rmShoot2 == True : #detruit le missile si il y a  eu un impact
                 self.affichage.can.delete( self.idMissile[index])
                 self.missile.pop(index)
                 self.idMissile.pop(index)
-            else:
+    
+            else: #fait bouger l'image du misisle
                 self.affichage.can.coords(el[1], el[0].x - el[0].rayon , el[0].y - el[0].rayon, el[0].x + el[0].rayon, el[0].y + el[0].rayon)
-
             index += 1
                 
         for el in zip(self.alien, self.idAlien) :
@@ -197,12 +205,16 @@ class gameRule:
             if ( (self.ship.x - missile.x)**2 + (self.ship.y - missile.y)**2 )**0.5 <= self.ship.rayon + missile.rayon: #si touche le vaiseau
                 self.affichage.can.delete( self.idship )
                 self.ship = ""
-                self.affichage.message.config( text = "Votre vaiseau est detruit" )
-                self.affichage.newGameBut.configure( relief="raised",text="Respawn", command = self.respawnShip )
+                
                 self.affichage.lowLife()
+                self.affichage.scoreup(-1000)
+                
+                self.affichage.changeMessage("Votre vaiseau est detruit")
+                self.affichage.newGameBut.configure( relief="raised",text="Respawn", command = self.respawnShip )
+                
                 if self.endGame() == True:
                     return("endGame")
-                self.affichage.scoreup(-1000)
+    
                 return ( True )
         
 
@@ -212,6 +224,7 @@ class gameRule:
                 self.bonus = ""
                 self.idBonus = ""
                 self.affichage.scoreup(1000)
+                
                 return(True)
 
     
@@ -231,22 +244,24 @@ class gameRule:
         index = 0
         for shelter in self.Shelter:
             if ( (shelter.x - missile.x)**2 + (shelter.y - missile.y)**2 )**0.5 < missile.rayon + shelter.rayon:
- 
                 self.affichage.can.delete( self.idShelter[index] )
                 self.Shelter.pop(index)
                 self.idShelter.pop(index)
+                
                 return(True)
+    
             index += 1
 
         return(False)
 
     def endGame(self):
         if len( self.alien ) == 0 :
-            self.affichage.message.config( text = "Youpi vous avez combatue avec bravour" )
+            self.affichage.changeMessage("Youpi vous avez gagner")
+            self.winStreak += 1
             self.alienGene()
 
         if self.affichage.getLife() <= 0:
-            self.affichage.message.config( text = "bam t'es tout naze !" )
+            self.affichage.changeMessage("Game Over")
             
             self.cleanGame()
             self.ShelterGene()
@@ -278,12 +293,9 @@ class gameRule:
         self.idBonus = ""
         
         self.affichage.resetLife()
+        self.affichage.resetScore()
         
         self.affichage.newGameBut.configure( relief="raised",text="New Game", command = self.initialisationObj )
-        
-        #score a 0
-        
-
 
 
 a = gameRule()
