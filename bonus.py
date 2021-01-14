@@ -2,8 +2,10 @@ from random import randint
 
 class bonus:
     def __init__ (self):
+
         self.rayon = 20
         self.y = 10
+
         direction=randint(0,1)
         if direction==1:
             self.dir=1
