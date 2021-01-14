@@ -19,7 +19,7 @@ class Alien:
         
         tire=random() * 100
 
-        if tire>=99.99:
+        if tire>=99.9:
             return(True) #cree un projo
         return(False)
 

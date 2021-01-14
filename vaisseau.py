@@ -16,7 +16,3 @@ class vaisseau:
         elif dir=="gauche":
             if self.x>self.min:
                 self.x=self.x-10
-
-    
-    def tir(self):
-        projectile = projectile(self.x,self.y,ally)

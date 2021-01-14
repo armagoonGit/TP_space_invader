@@ -4,9 +4,14 @@
 que fait : fichier classe des regles du jeu
 qui : FOËX Vick / nael Axel
 quand : 17/12/2020
-que reste a faire : les mouvement des alien en fct de infoMov. save la speed ?
+que reste a faire : 
+        image
+
+        end game
+        new game
 lien git : https://github.com/armagoonGit/TP_space_invader
 """
+
 from random import randint
 from time import sleep
 from threading import Event
@@ -22,8 +27,7 @@ class gameRule:
     def __init__(self):
         self.affichage = fenetre(self)
         
-        self.nbAlien = 56
-
+        self.nbAlien = 100
         self.alien = []
         self.idAlien = []
         self.alienGene()
@@ -39,13 +43,15 @@ class gameRule:
         self.missile = []
         self.idMissile = []
         
-        self.ship = vaisseau(25)
+        self.ship = ""
         self.idship=""
         self.cooldown=0
     
     def start(self):
         self.affichage.go()
-        
+
+#les methodes de generation :
+
     def ShelterGene(self):
         h = int( self.affichage.can.cget('height') ) - 200
         w = int( self.affichage.can.cget('width') ) - 100
@@ -84,14 +90,27 @@ class gameRule:
                 cursorX = 100
 
     def initialisationObj(self):
+        self.affichage.newGameBut.configure(relief="flat",text="fight !", command = "")
+        
+        self.ship = vaisseau(25)
         self.idship=self.affichage.can.create_oval(self.ship.x - self.ship.rayon, self.ship.y - self.ship.rayon, self.ship.x + self.ship.rayon, self.ship.y + self.ship.rayon,width=1,outline='red',fill='blue')
+        
         self.affichage.can.focus_set()
         self.affichage.can.bind('<Key>',lambda x:self.pinput(x))
+        
         self.turn()
+        
+    def respawnShip(self):
+        self.affichage.newGameBut.configure(relief="flat",text="fight !", command = "")
+        
+        self.ship = vaisseau(25)
+        self.idship=self.affichage.can.create_oval(self.ship.x - self.ship.rayon, self.ship.y - self.ship.rayon, self.ship.x + self.ship.rayon, self.ship.y + self.ship.rayon,width=1,outline='red',fill='blue')
+    
 
     def turn(self):
         infoMov = self.adaptMovement()
         index = 0
+
         
         if self.cooldown>0:
             self.cooldown= self.cooldown-1
@@ -99,8 +118,9 @@ class gameRule:
         for el in zip(self.missile, self.idMissile):
             rmShoot1 = el[0].mouvement()
             rmShoot2 = self.missileTouche(el[0])
-
-            if rmShoot1 == True or rmShoot2 == True :
+            if rmShoot2 == "endGame":
+                return()
+            elif rmShoot1 == True or rmShoot2 == True :
                 self.affichage.can.delete( self.idMissile[index])
                 self.missile.pop(index)
                 self.idMissile.pop(index)
@@ -155,46 +175,46 @@ class gameRule:
         return(res)
     
     def pinput(self,event):
-        touche=event.keysym
-        if touche=='Left':
-            self.ship.mouvement("gauche")
-        elif touche=='Right':
-            self.ship.mouvement("droite")
-        elif touche=='space' and self.cooldown==0:
-            self.cooldown=15
-            self.missile.append( projectile(self.ship.x + 5, self.ship.y - 20,self.affichage.height,5, "ally") )
-            missile = self.missile[-1]
-            self.idMissile.append( self.affichage.can.create_oval(missile.x - missile.rayon, missile.y - missile.rayon, missile.x + missile.rayon, missile.y - missile.rayon, width=1,outline='green',fill='green') )
-        
-        self.affichage.can.coords(self.idship ,self.ship.x - self.ship.rayon, self.ship.y - self.ship.rayon, self.ship.x + self.ship.rayon, self.ship.y + self.ship.rayon)
+        if self.ship != "":
+            touche=event.keysym
+            if touche=='Left':
+                self.ship.mouvement("gauche")
+            elif touche=='Right':
+                self.ship.mouvement("droite")
+            elif touche=='space' and self.cooldown==0:
+                self.cooldown=15
+                self.missile.append( projectile(self.ship.x + 5, self.ship.y - 20,self.affichage.height,5, "ally") )
+                missile = self.missile[-1]
+                self.idMissile.append( self.affichage.can.create_oval(missile.x - missile.rayon, missile.y - missile.rayon, missile.x + missile.rayon, missile.y - missile.rayon, width=1,outline='green',fill='green') )
+            
+            self.affichage.can.coords(self.idship ,self.ship.x - self.ship.rayon, self.ship.y - self.ship.rayon, self.ship.x + self.ship.rayon, self.ship.y + self.ship.rayon)
         self.affichage.fen.after(20)
 
     def missileTouche(self, missile):
         index = 0
         
-        if ( (self.ship.x - missile.x)**2 + (self.ship.y - missile.y)**2 )**0.5 <= self.ship.rayon + missile.rayon: #si touche le vaiseau
-            self.affichage.can.delete( self.idship )
-            self.affichage.message.config( text = "Votre vaiseau est detruit" )
-            self.affichage.lowLife()
-            self.affichage.scoreup(-1000)
-            return ( True )
+        if self.ship != "":
+            if ( (self.ship.x - missile.x)**2 + (self.ship.y - missile.y)**2 )**0.5 <= self.ship.rayon + missile.rayon: #si touche le vaiseau
+                self.affichage.can.delete( self.idship )
+                self.ship = ""
+                self.affichage.message.config( text = "Votre vaiseau est detruit" )
+                self.affichage.newGameBut.configure( relief="raised",text="Respawn", command = self.respawnShip )
+                self.affichage.lowLife()
+                if self.endGame() == True:
+                    return("endGame")
+                self.affichage.scoreup(-1000)
+                return ( True )
         
-<<<<<<< HEAD
+
         if self.bonus != "":
             if ( (self.bonus.x - missile.x)**2 + (self.bonus.y - missile.y)**2 )**0.5 <= self.bonus.rayon + missile.rayon:
                 self.affichage.can.delete( self.idBonus )
                 self.bonus = ""
                 self.idBonus = ""
                 self.affichage.scoreup(1000)
-=======
-        if ( (self.Bonus.x - missile.x)**2 + (self.Bonus.y - missile.y)**2 )**0.5 <= 10:
-            self.affichage.can.delete( self.idBonus )
-            self.Bonus.exist = 0
-            self.idBonus = ""
-            self.affichage.scoreup(1000)
->>>>>>> 85a9614f877380de162ffa36f533bbc1b8d96a8b
-    
+                return(True)
 
+    
         for alien in self.alien:
             if missile.shooter == "ally" and ( (alien.x - missile.x)**2 + (alien.y - missile.y)**2 )**0.5 <= missile.rayon + alien.rayon:
                 self.affichage.can.delete( self.idAlien[index])
@@ -202,16 +222,16 @@ class gameRule:
                 self.idAlien.pop(index)
                 self.affichage.scoreup(100)
                 
+                if self.endGame() == True:
+                    return("endGame")
+                
                 return(True)
             index += 1
         
         index = 0
         for shelter in self.Shelter:
             if ( (shelter.x - missile.x)**2 + (shelter.y - missile.y)**2 )**0.5 < missile.rayon + shelter.rayon:
-<<<<<<< HEAD
-=======
-                print(( (shelter.x - missile.x)**2 + (shelter.y - missile.y)**2 )**0.5, missile.rayon + shelter.rayon )
->>>>>>> 85a9614f877380de162ffa36f533bbc1b8d96a8b
+ 
                 self.affichage.can.delete( self.idShelter[index] )
                 self.Shelter.pop(index)
                 self.idShelter.pop(index)
@@ -219,7 +239,52 @@ class gameRule:
             index += 1
 
         return(False)
-           
+
+    def endGame(self):
+        if len( self.alien ) == 0 :
+            self.affichage.message.config( text = "Youpi vous avez combatue avec bravour" )
+            self.alienGene()
+
+        if self.affichage.getLife() <= 0:
+            self.affichage.message.config( text = "bam t'es tout naze !" )
+            
+            self.cleanGame()
+            self.ShelterGene()
+            self.alienGene()
+            return(True)
+
+            
+    def cleanGame(self):
+        for el in self.idAlien:
+            self.affichage.can.delete( el )
+        
+        self.alien = []
+        self.idAlien = []
+        
+        for el in self.idShelter:
+            self.affichage.can.delete( el )
+        
+        self.Shelter=[]
+        self.idShelter=[]
+        
+        for el in self.idMissile:
+            self.affichage.can.delete( el )
+        
+        self.missile = []
+        self.idMissile = []
+                
+        self.affichage.can.delete( self.idBonus )
+        self.bonus = ""
+        self.idBonus = ""
+        
+        self.affichage.resetLife()
+        
+        self.affichage.newGameBut.configure( relief="raised",text="New Game", command = self.initialisationObj )
+        
+        #score a 0
+        
+
+
 
 a = gameRule()
 

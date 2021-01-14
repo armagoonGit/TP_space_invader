@@ -27,7 +27,7 @@ class fenetre():
 
         
         self.score = Label( self.fen, text = "score : 0" )
-        self.live = Label( self.fen, text = "lives : 3" )
+        self.live = Label( self.fen, text = "lives : 1" )
 
         self.can = Canvas( self.fen, width = self.width, height = self.height )
 
@@ -54,6 +54,16 @@ class fenetre():
         text = int( text[-1] ) - 1
         self.live.config(text = str( "lives : " + str( text ) ))
         self.live.config( bg = "red")
+    
+    def getLife(self):
+        life = self.live.cget("text")
+        life = life.split(" ")
+        life = int( life[-1] ) 
+        return( life )
+    
+    def resetLife(self):
+        self.live.config(text = "lives : 1")
+        
     
     def scoreup(self,points):
         text = self.score.cget("text")
