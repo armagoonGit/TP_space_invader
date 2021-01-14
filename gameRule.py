@@ -16,6 +16,7 @@ lien git : https://github.com/armagoonGit/TP_space_invader
 from random import randint
 from time import sleep
 from threading import Event
+from tkinter import PhotoImage
 
 from vaisseau import vaisseau
 from bonus import bonus
@@ -27,6 +28,7 @@ from projectile import projectile
 class gameRule:
     def __init__(self):
         self.affichage = fenetre(self)
+        self.affichage.can.image=[]
         
         self.winStreak = 0
         
@@ -34,20 +36,25 @@ class gameRule:
         self.alien = []
         self.idAlien = []
         self.alienGene()
+        self.alienim = PhotoImage(file='imagegif/alien1.gif')
         
         self.nbshelter =5*80
         self.Shelter=[]
         self.idShelter=[]
         self.ShelterGene()
+        self.shelterim = PhotoImage(file='imagegif/bunker.gif')
         
         self.bonus = ""
         self.idBonus = ""
+        self.bonusim = PhotoImage(file='imagegif/bonus.gif')
         
         self.missile = []
         self.idMissile = []
+        self.bonusim = PhotoImage(file='imagegif/Projectile.gif')
         
         self.ship = ""
         self.idship=""
+        self.shipim = PhotoImage(file='imagegif/vaisseau.gif')
         
         self.cooldown=0
         
@@ -82,13 +89,14 @@ class gameRule:
         cursorY = 100
 
         for i in range(self.nbAlien):
-            self.alien.append( Alien(cursorX, cursorY, 10, self.winStreak) )
+            self.alien.append( Alien(cursorX, cursorY, 17, self.winStreak) )
             
             alien = self.alien[-1]
             ray = alien.rayon
             
-            self.idAlien.append( self.affichage.can.create_oval(alien.x - ray, alien.y - ray, alien.x + ray, alien.y + ray,width=1,outline='red',fill='blue') )
-            
+            self.idAlien.append( self.affichage.can.create_image(alien.x, alien.y, anchor='center', image= self.alienim))
+            self.affichage.can.image.append(self.alienim)
+        
             cursorX += 100
             if cursorX >= w:
                 cursorY += 40
@@ -140,7 +148,7 @@ class gameRule:
         for el in zip(self.alien, self.idAlien) :
 
             addShoot = el[0].mouvement( infoMov ) #mouvement de l'alien 
-            self.affichage.can.coords(el[1] ,el[0].x - el[0].rayon, el[0].y - el[0].rayon, el[0].x + el[0].rayon, el[0].y + el[0].rayon ) #affichage de l'alien avec un rond moche
+            self.affichage.can.coords(el[1] ,el[0].x, el[0].y) #affichage de l'alien avec un rond moche
             
             if addShoot == True:
                 self.missile.append( projectile(el[0].x , el[0].y, self.affichage.height, 5, "foe") )
