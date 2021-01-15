@@ -28,21 +28,22 @@ from projectile import projectile
 class gameRule:
     def __init__(self):
         self.affichage = fenetre(self)
-        self.affichage.can.image=[]
+        
         
         self.winStreak = 0
         
-        self.nbAlien = 100
+        self.nbAlien = 56
         self.alien = []
         self.idAlien = []
-        self.alienGene()
         self.alienim = PhotoImage(file='imagegif/alien1.gif')
+        self.alienGene()
+        
         
         self.nbshelter =5*80
         self.Shelter=[]
         self.idShelter=[]
-        self.ShelterGene()
         self.shelterim = PhotoImage(file='imagegif/bunker.gif')
+        self.ShelterGene()
         
         self.bonus = ""
         self.idBonus = ""
@@ -50,7 +51,7 @@ class gameRule:
         
         self.missile = []
         self.idMissile = []
-        self.bonusim = PhotoImage(file='imagegif/Projectile.gif')
+        self.missileim = PhotoImage(file='imagegif/Projectile.gif')
         
         self.ship = ""
         self.idship=""
@@ -75,8 +76,9 @@ class gameRule:
                 self.Shelter.append( shelter(cursorX, cursorY, 5) )
                 Shelter = self.Shelter[-1]
                 ray = Shelter.rayon
-                self.idShelter.append( self.affichage.can.create_rectangle(Shelter.x + ray, Shelter.y + ray, Shelter.x - ray, Shelter.y - ray,fill='DarkOrchid1') )
-            
+                self.idShelter.append( self.affichage.can.create_image(Shelter.x, Shelter.y, anchor='center',image=self.shelterim) )
+                self.affichage.can.image.append(self.shelterim)
+
             cursorX += 10
             if cursorX >= w:
                 cursorY += 10
@@ -106,8 +108,9 @@ class gameRule:
         self.affichage.newGameBut.configure(relief="flat",text="fight !", command = "")
         
         self.ship = vaisseau(25)
-        self.idship=self.affichage.can.create_oval(self.ship.x - self.ship.rayon, self.ship.y - self.ship.rayon, self.ship.x + self.ship.rayon, self.ship.y + self.ship.rayon,width=1,outline='red',fill='blue')
-        
+        self.idship=self.affichage.can.create_image(self.ship.x, self.ship.y, anchor='center', image=self.shipim)
+        self.affichage.can.image.append(self.shipim)
+
         self.affichage.can.focus_set()
         self.affichage.can.bind('<Key>',lambda x:self.pinput(x))
         
@@ -117,8 +120,8 @@ class gameRule:
         self.affichage.newGameBut.configure(relief="flat",text="fight !", command = "")
         
         self.ship = vaisseau(25)
-        self.idship=self.affichage.can.create_oval(self.ship.x - self.ship.rayon, self.ship.y - self.ship.rayon, self.ship.x + self.ship.rayon, self.ship.y + self.ship.rayon,width=1,outline='red',fill='blue')
-    
+        self.idship=self.affichage.can.create_image(self.ship.x, self.ship.y, anchor='center', image=self.shipim)
+        self.affichage.can.image.append(self.shipim)
 
     def turn(self):
         self.affichage. manageMessage()
@@ -142,7 +145,7 @@ class gameRule:
                 self.idMissile.pop(index)
     
             else: #fait bouger l'image du misisle
-                self.affichage.can.coords(el[1], el[0].x - el[0].rayon , el[0].y - el[0].rayon, el[0].x + el[0].rayon, el[0].y + el[0].rayon)
+                self.affichage.can.coords(el[1], el[0].x, el[0].y)
             index += 1
                 
         for el in zip(self.alien, self.idAlien) :
@@ -154,20 +157,22 @@ class gameRule:
                 self.missile.append( projectile(el[0].x , el[0].y, self.affichage.height, 5, "foe") )
                 missile = self.missile[-1]
                 ray = missile.rayon
-                self.idMissile.append( self.affichage.can.create_oval(missile.x - ray, missile.y - ray, missile.x + ray, missile.y + ray,width=1,outline='green',fill='green') )
+                self.idMissile.append( self.affichage.can.create_image(missile.x, missile.y, anchor='center', image=self.missileim ))
+                self.affichage.can.image.append(self.missileim)
                 
         if self.bonus == "": #si il n'y a pas deja de bonus. On en creer peut etre un
             bonusnb=randint(1000, 1000)   
             if bonusnb == 1000 :
                 self.bonus=bonus()
                 ray = self.bonus.rayon
-                self.idBonus=self.affichage.can.create_oval(self.bonus.x - ray ,self.bonus.y - ray ,self.bonus.x + ray, self.bonus.y + ray,width=1,outline="blue",fill="lime")
-
+                self.idBonus=self.affichage.can.create_image(self.bonus.x,self.bonus.y ,anchor='center', image= self.bonusim)
+                self.affichage.can.image.append(self.alienim)
+                
         else: #si on a un bonus en jeu on le fait bouger
             if self.bonus.x <= 1000 and self.bonus.dir == 1 or self.bonus.x >= -10 and self.bonus.dir == -1:
                 self.bonus.mouvement()
                 ray = self.bonus.rayon
-                self.affichage.can.coords(self.idBonus ,self.bonus.x - ray, self.bonus.y - ray, self.bonus.x + ray, self.bonus.y + ray )
+                self.affichage.can.coords(self.idBonus ,self.bonus.x, self.bonus.y)
             else:
                 self.affichage.can.delete(self.idBonus)
                 self.bonus = ""
@@ -201,9 +206,10 @@ class gameRule:
                 self.cooldown=15
                 self.missile.append( projectile(self.ship.x + 5, self.ship.y - 20,self.affichage.height,5, "ally") )
                 missile = self.missile[-1]
-                self.idMissile.append( self.affichage.can.create_oval(missile.x - missile.rayon, missile.y - missile.rayon, missile.x + missile.rayon, missile.y - missile.rayon, width=1,outline='green',fill='green') )
+                self.idMissile.append( self.affichage.can.create_image(missile.x, missile.y, anchor='center', image=self.missileim) )
+                self.affichage.can.image.append(self.missileim)
             
-            self.affichage.can.coords(self.idship ,self.ship.x - self.ship.rayon, self.ship.y - self.ship.rayon, self.ship.x + self.ship.rayon, self.ship.y + self.ship.rayon)
+            self.affichage.can.coords(self.idship ,self.ship.x, self.ship.y)
         self.affichage.fen.after(20)
 
     def missileTouche(self, missile):

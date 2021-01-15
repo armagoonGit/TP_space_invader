@@ -4,7 +4,7 @@ class bonus:
     def __init__ (self):
 
         self.rayon = 20
-        self.y = 10
+        self.y = 20
 
         direction=randint(0,1)
         if direction==1:

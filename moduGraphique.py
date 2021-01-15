@@ -30,6 +30,7 @@ class fenetre():
         self.live = Label( self.fen, text = "lives : 3" )
 
         self.can = Canvas( self.fen, width = self.width, height = self.height )
+        self.can.image=[]
         
         self.idMessage =  self.can.create_text(self.width/2,50,fill="darkblue",font="systemfixed 20 italic bold",
                         text="Le jeu est LOURD !")
