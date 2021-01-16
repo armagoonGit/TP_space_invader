@@ -26,14 +26,14 @@ class fenetre():
         self.message =Label( self.fen, text = "Le jeu est LOOOOOURD")
 
         
-        self.score = Label( self.fen, text = "score : 0" )
-        self.live = Label( self.fen, text = "lives : 3" )
+        self.score = Label( self.fen, text = "score : 1000" )
+        self.live = Label( self.fen, text = "lives : 1" )
 
         self.can = Canvas( self.fen, width = self.width, height = self.height )
         self.can.image=[]
         
-        self.idMessage =  self.can.create_text(self.width/2,50,fill="darkblue",font="systemfixed 20 italic bold",
-                        text="Le jeu est LOURD !")
+        self.idMessage =  self.can.create_text(self.width/2, 50, fill="darkblue",
+                        font="systemfixed 20 italic bold", text="Le jeu est LOURD !", anchor = "n")
 
         
     def go(self): #mise en place au debut du programe
@@ -55,6 +55,7 @@ class fenetre():
         self.fen.mainloop()
         
     def changeMessage(self, message):
+
         self.can.itemconfig(self.idMessage, text = message )
         self.cooldownMessage = 50
         
@@ -98,6 +99,44 @@ class fenetre():
         
     def resetScore(self):
         self.score.config(text= "score : 0") 
+        
+    def getScore(self):
+        text = self.score.cget("text")
+        text = text.split(":")
+        return(text[1])
+        
+        
+    def manageScore(self):
+        scoreDoc = open('score.txt',"r")
+        scoreList = []
+        
+        for el in scoreDoc :
+            scoreList.append( el.rstrip('\n'))
+            
+        scoreDoc.close()
+        
+        index = 0
+        score = int (self.getScore() )
+
+        scoreList.append(score)
+        scoreList = [ int(x) for x in scoreList ]
+        scoreList.sort()
+        scoreList.reverse()
+        
+
+            
+        scoreDoc = open('score.txt',"w")
+        strScore = ""
+        print("oui", score)
+        print(scoreList)
+        for i,el in enumerate(scoreList[: -1]):
+            scoreDoc.write( str( el ) + '\n' )
+            strScore += str( i + 1 ) + '. ' + str(el) + '\n'
+        scoreDoc.close()
+        
+        self.changeMessage(strScore)
+        
+        
         
         
 

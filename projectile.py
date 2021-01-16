@@ -5,9 +5,11 @@ class projectile:
         
         self.yMax = yMax
         self.rayon = rayon
+        self.id = ""
 
         self.speed=1
         self.shooter = shooter
+        
         if shooter == "foe":
             self.direction = 1
         elif shooter == "ally":
@@ -20,10 +22,5 @@ class projectile:
             return(True)
         return(False)
 
-    def collision(self):
-        pass
-    #if len( canvas.find_overlapping(canvas.coords(self)[0], canvas.coords(self)[1], canvas.coords(self)[2], canvas.coords(self)[3]) ) > 1:
-         #   destroy(canvas.find_overlapping(canvas.coords(self)[0],canvas.coords(self)[1],canvas.coords(self)[2],canvas.coords(self)[3])[1])
-            #plutot que [1], on peut récupérer les indexs dans la liste et on teste, selon les indexs si l'objet est un ennemi, le joueur, un shelter ou un missile -> pn doit tout détruire après.
-
-        
+    def addId(self, ID):
+        self.id = ID
