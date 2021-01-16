@@ -16,6 +16,8 @@ class fenetre():
         #tkinter
         self.fen = Tk()
         
+        self.fondim=PhotoImage(file = 'imagegif/fond.gif')
+        
         self.width = 1000
         self.height = 700 
         
@@ -30,7 +32,8 @@ class fenetre():
         self.live = Label( self.fen, text = "lives : 1" )
 
         self.can = Canvas( self.fen, width = self.width, height = self.height )
-        self.can.image=[]
+        self.can.create_image(0, 0, image=self.fondim, anchor='nw')
+        self.can.image=[self.fondim]
         
         self.idMessage =  self.can.create_text(self.width/2, 50, fill="darkblue",
                         font="systemfixed 20 italic bold", text="Le jeu est LOURD !", anchor = "n")
