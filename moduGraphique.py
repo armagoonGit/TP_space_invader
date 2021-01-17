@@ -29,7 +29,7 @@ class fenetre():
 
         
         self.score = Label( self.fen, text = "score : 0" )
-        self.live = Label( self.fen, text = "lives : 1" )
+        self.live = Label( self.fen, text = "lives : 3" )
 
         self.can = Canvas( self.fen, width = self.width, height = self.height )
         self.can.create_image(0, 0, image=self.fondim, anchor='nw')
@@ -62,7 +62,7 @@ class fenetre():
         self.fen.mainloop()
         
     def aboutIt(self):
-        messagebox.showinfo('A propos','"Moi j\'aurai ete le prof je nous aurai mie une bonne note"')
+        messagebox.showinfo('A propos','"Moi j\'aurai été le prof je nous aurais mis une bonne note"')
         
 #message
     def changeMessage(self, message):
