@@ -169,8 +169,9 @@ class gameRule:
         for el in self.alien :
             if self.endGame( el.y ) == True:
                 return()
-
-            addShoot = el.shoot()
+            
+            tireprob=(self.nbAlien / (len(self.alien)))*35
+            addShoot = el.shoot(tireprob)
             
             el.mouvement( infoMov ) #mouvement de l'alien 
             self.affichage.can.coords(el.id ,el.x, el.y) #affichage de l'alien
@@ -214,7 +215,7 @@ class gameRule:
         """
         w = int( self.affichage.can.cget('width') )
         res = {}
-        res["speed"] = (len(self.alien) / self.nbAlien) / ( len(self.alien) / 2 ) #vitesse max pour un seul alien est de 2
+        res["speed"] = (self.nbAlien / (len(self.alien)+5))*0.5 
         res["newRow"] = False
         
         for alien in self.alien :
