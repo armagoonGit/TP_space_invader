@@ -64,8 +64,8 @@ class cAlien:
 
         self.x +=  self.direction * self.speed * infoMov["speed"]
     
-    def shoot(self):
-        tire=random() * 100 + self.fireChance
+    def shoot(self,tireprob):
+        tire=random() * 100 + self.fireChance + tireprob*0.01 - 0.3
     
         if tire>=99.9:
             return(True) #cree un projo
